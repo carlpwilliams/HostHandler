@@ -1,0 +1,24 @@
+Databases/
+Source/Betfred.Web/Data/Submit Queue
+Source/Betfred.Web/Data/indexes
+Source/Betfred.Web/Data/logs
+Source/Betfred.Web/Data/viewstate
+Source/Betfred.Web/Data/diagnostics
+Source/Betfred.Web/Data/serialization
+Source/Betfred.Web/Data/packages/*.zip
+bin/
+obj/
+*.suo
+*.user
+Source/Betfred.Web/sitecore modules/
+Source/Betfred.Web/sitecore*/
+temp/
+MediaCache/
+App_Data/
+Doc/
+Nuget/
+Published/
+/Solution/TestResults
+Source/Betfred.Web/Web.config
+Source/Betfred.Web/Data/packages/*.zip
+*.orig
