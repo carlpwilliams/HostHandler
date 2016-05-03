@@ -205,6 +205,14 @@ namespace HostsHandler
                 }
             }
 
+            public string Domain
+            {
+                get
+                {
+                    return lvItem.Group.Name;
+                }
+            }
+
             public ListViewItem lvItem;
 
             public outputLine(ListViewItem lvi)
@@ -216,7 +224,7 @@ namespace HostsHandler
             {
                 string line = IsIncludedString.PadLeft(indent * 10).PadRight(10 * indent) + ip; ;
 
-                return line.PadRight(50) + "# " + Description.Trim();
+                return line.PadRight(40) + Domain.PadRight(30) + "# " + Description.Trim();
             }
         }
     }
