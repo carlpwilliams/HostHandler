@@ -15,6 +15,7 @@ namespace HostsHandler
 
     // TODO: crud operations on domains and ip addresses
     // TODO: crud operations on scenarios - consider saving them in the bottom of the host file.
+    // TODO: add file watkcher to monitor the host file and reload it if it changes.
 
     public partial class Form1 : Form
     {
