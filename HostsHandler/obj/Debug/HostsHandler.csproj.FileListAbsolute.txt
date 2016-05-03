@@ -1,0 +1,9 @@
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\bin\Debug\HostsHandler.exe.config
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\bin\Debug\HostsHandler.exe
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\bin\Debug\HostsHandler.pdb
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\obj\Debug\HostsHandler.csprojResolveAssemblyReference.cache
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\obj\Debug\HostsHandler.Form1.resources
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\obj\Debug\HostsHandler.Properties.Resources.resources
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\obj\Debug\HostsHandler.csproj.GenerateResource.Cache
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\obj\Debug\HostsHandler.exe
+D:\Dev\HostsHandler\HostsHandler\HostsHandler\obj\Debug\HostsHandler.pdb
