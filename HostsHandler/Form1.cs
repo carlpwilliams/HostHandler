@@ -12,6 +12,10 @@ using System.Windows.Forms;
 
 namespace HostsHandler
 {
+
+    // TODO: crud operations on domains and ip addresses
+    // TODO: crud operations on scenarios - consider saving them in the bottom of the host file.
+
     public partial class Form1 : Form
     {
         public bool handleByHostsHandler = false;
@@ -43,7 +47,6 @@ namespace HostsHandler
         public void LoadFile()
         {
             string[] hostFileString;
-            // backup hosts file.
 
             using (StreamReader sr = new StreamReader("c:\\windows\\system32\\drivers\\etc\\hosts"))
             {
@@ -145,8 +148,9 @@ namespace HostsHandler
 
         private void save()
         {
-
-            var outputFilename = "c:\\hostsOut";
+            // backup host file
+            System.IO.File.Copy("c:\\windows\\system32\\drivers\\etc\\hosts", "c:\\windows\\system32\\drivers\\etc\\hostsOld", true);
+            var outputFilename = "c:\\windows\\system32\\drivers\\etc\\hosts";
             using (System.IO.StreamWriter sw = new StreamWriter(outputFilename, false))
             {
                 sw.WriteLine("# ManageByHostsHander=" + handleByHostsHandler);
