@@ -14,24 +14,54 @@ namespace HostsHandler
 {
     public partial class Form1 : Form
     {
+        public bool handleByHostsHandler = false;
         public Form1()
-        {           InitializeComponent();
+        {
+            InitializeComponent();
+            listView1.Groups.Clear();
+            listView1.Items.Clear();
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        public bool warnOrSave()
+        {
+            if (handleByHostsHandler)
+            {
+                save();
+            }
+            else
+            {
+                DialogResult ret = MessageBox.Show("By manipuating your host file here, you acknowledge that HostsManager will write to your hostfile.", "Are you sure?", MessageBoxButtons.YesNo);
+                if (ret == System.Windows.Forms.DialogResult.Yes)
+                {
+                    handleByHostsHandler = true;
+                    save();
+                }
+            }
+            return handleByHostsHandler;
+        }
+
+        public void LoadFile()
         {
             string[] hostFileString;
+            // backup hosts file.
+
             using (StreamReader sr = new StreamReader("c:\\windows\\system32\\drivers\\etc\\hosts"))
             {
-
                 hostFileString = sr.ReadToEnd().Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-
                 sr.Close();
             }
+            LoadingProgress.Maximum = hostFileString.Length;
+
             foreach (string line in hostFileString)
             {
+                LoadingProgress.Value = (int)LoadingProgress.Value + 1;
                 string entry = line;
-                var match = Regex.Match(line, @"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b");
+                if (line.ToLower().Contains("handlebyhostsmanager"))
+                {
+                    handleByHostsHandler = (bool)line.ToLower().Contains("true");
+                }
+
+                Match match = HostsHandler.Helper.getIPMatchFromString(line);
                 if (match.Success)
                 {
                     entry = line.Replace("\t", "`").Replace("``", "`");
@@ -48,7 +78,17 @@ namespace HostsHandler
                     upsertDomain(domain.Replace(" ", ""), ip, included, description);
                 }
             }
-            listView1.Sort();
+            LoadingProgress.Visible = false;
+            listView1.Visible = true;
+            listView1.Sort(); // TODO: better sorting and grouping. domains should be grouped with subdomains below them
+
+            // TODO: Deduplicate entries
+
+            if (handleByHostsHandler)
+            {
+                save();
+            }
+
         }
 
         private bool upsertDomain(string domain, string ip, bool included, string descriptor)
@@ -66,19 +106,16 @@ namespace HostsHandler
                 lvi.BackColor = Color.LightGreen;
                 listView1.Groups[domain].Header = lvi.Text;
             }
+            lvi.Name = ip;
             listView1.Items.Add(lvi);
 
             return true;
         }
 
-        private void saveHostFile()
-        {
-
-        }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             listView1.Items.Clear();
+            LoadFile();
         }
 
         private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
@@ -97,6 +134,85 @@ namespace HostsHandler
             {
                 e.Item.BackColor = Color.LightGreen;
                 e.Item.Group.Header = e.Item.Group.Name + " - " + e.Item.Text;
+            }
+            warnOrSave();
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            warnOrSave();
+        }
+
+        private void save()
+        {
+
+            var outputFilename = "c:\\hostsOut";
+            using (System.IO.StreamWriter sw = new StreamWriter(outputFilename, false))
+            {
+                sw.WriteLine("# ManageByHostsHander=" + handleByHostsHandler);
+                foreach (ListViewGroup item in listView1.Groups)
+                {
+                    // output section header
+                    sw.WriteLine("");
+                    sw.WriteLine(("# " + item.Name + " ").PadLeft(10).PadRight(80, '-'));
+
+                    foreach (ListViewItem childItem in item.Items)
+                    {
+                        sw.WriteLine(new outputLine(childItem).ToLineString(1));
+                    }
+                    //sw.WriteLine(("# end of " + item.Name).PadLeft(10).PadRight(80, '-'));
+                }
+            }
+            SaveBtn.Visible = false;
+        }
+
+
+        public class outputLine
+        {
+            public bool IsIncluded
+            {
+                get
+                {
+                    return (bool)(lvItem.BackColor == Color.LightGreen);
+                }
+            }
+
+            public string IsIncludedString
+            {
+                get
+                {
+                    return (IsIncluded ? "" : "#");
+                }
+            }
+
+            public string ip
+            {
+                get
+                {
+                    return HostsHandler.Helper.getIPMatchFromString(lvItem.Text).Value;
+                }
+            }
+
+            public string Description
+            {
+                get
+                {
+                    return lvItem.Text.Split('-')[0];
+                }
+            }
+
+            public ListViewItem lvItem;
+
+            public outputLine(ListViewItem lvi)
+            {
+                lvItem = lvi;
+            }
+
+            public string ToLineString(int indent)
+            {
+                string line = IsIncludedString.PadLeft(indent * 10).PadRight(10 * indent) + ip; ;
+
+                return line.PadRight(50) + "# " + Description.Trim();
             }
         }
     }
